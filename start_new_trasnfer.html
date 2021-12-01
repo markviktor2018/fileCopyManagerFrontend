@@ -1,0 +1,871 @@
+<html>
+<head>
+<title>Тестовая программа</title>
+</head>
+<body>
+
+<style>
+
+#myBar_disk1 {
+  width: 0%;
+  height: 30px;
+  background-color: #071076;
+  border-radius: 5px;
+  text-align: center; /* To center it horizontally (if you want) */
+  line-height: 30px; /* To center it vertically */
+  color: white;
+}
+
+
+#myBar_disk2 {
+  width: 0%;
+  height: 30px;
+  background-color: #071076;
+  border-radius: 5px;
+  text-align: center; /* To center it horizontally (if you want) */
+  line-height: 30px; /* To center it vertically */
+  color: white;
+}
+
+</style>
+
+<script>
+
+disk_1_active=false;
+disk_2_active=false;
+
+disk_1_not_empty=false;
+disk_2_not_empty=false;
+
+disk_1_real_path="";
+disk_2_real_path="";
+
+
+main_root_path="";
+
+selectedDisk="";
+sub_patch1="";
+sub_patch2="";
+
+disk1_size_value="";
+disk2_size_value="";
+
+selected_folder="";
+
+var i = 0;
+
+function move() {
+  if (i == 0) {
+    i = 1;
+    var elem = document.getElementById("myBar_disk1");
+    var width = 10;
+    var id = setInterval(frame, 10);
+    function frame() {
+      if (width >= 100) {
+        clearInterval(id);
+        i = 0;
+      } else {
+        width++;
+        elem.style.width = width + "%";
+        elem.innerHTML = width + "%";
+      }
+    }
+  }
+} 
+
+
+function addNewTansferLog(job,device,size,status) {
+
+	
+			 (async function() {
+				await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+			
+			   var answer = callbackObj.addNewTansferLog(job,device,size,status);
+			 
+			})();
+
+}
+
+function finish() {
+
+	
+			 (async function() {
+				await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+			
+			  var answer = callbackObj.setFinish();
+			  
+			   var answer_move = callbackObj.getMoveStatus();
+			   
+			  
+				answer_move=JSON.parse(answer_move);
+
+			  
+			  if(answer_move.move_status_disk1=="done")
+			   addNewTansferLog(selected_folder,document.getElementById('device1selected').innerHTML,disk1_size_value,'Finished');
+			   
+				if(answer_move.move_status_disk2=="done")
+			   addNewTansferLog(selected_folder,document.getElementById('device2selected').innerHTML,disk2_size_value,'Finished');
+			  
+			  window.location.href="index.html";
+			  
+			})();
+
+}
+
+
+function formatDisk1() {
+
+		
+			 (async function() {
+				await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+			
+			  var answer = callbackObj.formatDisk1();
+			  
+			  addNewTansferLog(selected_folder,document.getElementById('device1selected').innerHTML,disk1_size_value,'Formatted');
+			  
+			})();
+
+}
+
+function formatDisk2() {
+
+		
+			 (async function() {
+				await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+			
+			  var answer = callbackObj.formatDisk2();
+			  
+			  
+			    addNewTansferLog(selected_folder,document.getElementById('device2selected').innerHTML,disk1_size_value,'Formatted');
+			  
+			})();
+
+}
+
+function startMoveDisk1() {
+
+	if(sub_patch1!="") {
+	
+		if(disk_1_real_path!="") {
+		
+			 (async function() {
+				await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+			
+			  var answer = callbackObj.startMoveDisk1(disk_1_real_path,sub_patch1);
+			  
+			  addNewTansferLog(selected_folder,document.getElementById('device1selected').innerHTML,disk1_size_value,'Transfer Started');
+			  
+			  
+			})();
+			
+			
+			
+		
+		}
+	
+	}
+
+}
+
+function stopMoveDisk1() {
+
+	if(sub_patch1!="") {
+	
+		if(disk_1_real_path!="") {
+		
+			 (async function() {
+				await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+				
+			  var answer = callbackObj.stopMoveDisk1();
+			  
+			  addNewTansferLog(selected_folder,document.getElementById('device1selected').innerHTML,disk1_size_value,'Transfer Stopped');
+			  
+			})();
+		
+		}
+	
+	}
+
+}
+
+function stopMoveDisk2() {
+
+	if(sub_patch2!="") {
+	
+		if(disk_2_real_path!="") {
+		
+			 (async function() {
+				await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+				
+			  var answer = callbackObj.stopMoveDisk2();
+			  
+			  addNewTansferLog(selected_folder,document.getElementById('device2selected').innerHTML,disk2_size_value,'Transfer Stopped');
+			  
+			})();
+		
+		}
+	
+	}
+
+}
+
+function startMoveDisk2() {
+
+	if(sub_patch2!="") {
+	
+		if(disk_2_real_path!="") {
+		
+			 (async function() {
+				await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+				
+			  var answer = callbackObj.startMoveDisk2(disk_2_real_path,sub_patch2);
+			  
+			  addNewTansferLog(selected_folder,document.getElementById('device2selected').innerHTML,disk2_size_value,'Transfer Started');
+			  
+			})();
+		
+		}
+	
+	}
+
+}
+
+function getTransferStatus() {
+
+	(async function() {
+		await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+		
+	  var answer = callbackObj.getMoveStatus();
+	   answer=JSON.parse(answer);
+	   
+	   ////disk1
+	   
+	   /////трансфер еще не начался
+	   if(answer.move_status_disk1=="") {
+	   
+			checkIfTransferCan('disk1');
+			
+			var elem = document.getElementById("myBar_disk1");
+			elem.style.width =  "0%";
+			elem.innerHTML = "";
+			
+			
+			
+			
+	   }
+	   
+	    /////трансфер уже начался
+	   if(answer.move_status_disk1=="moving") {
+	   
+			document.getElementById('start_transfer_disk1_image').src="img/stop_transfer.png";
+			document.getElementById('start_transfer_disk1_link').href="javascript:stopMoveDisk1()";
+			
+			var elem = document.getElementById("myBar_disk1");
+			elem.style.width = Math.round(answer.move_percent_disk1) + "%";
+			elem.innerHTML = Math.round(answer.move_percent_disk1) + "%";
+			
+	   }
+	   
+	   
+	    /////трансфер закончился
+	   if(answer.move_status_disk1=="done") {
+	
+			var elem = document.getElementById("myBar_disk1");
+			elem.style.width = "0%";
+			elem.innerHTML = "";
+			
+			if(document.getElementById('start_transfer_disk1_image').src!="") {
+				document.getElementById('start_transfer_disk1_image').src="img/format_card.png";
+				document.getElementById('start_transfer_disk1_link').href="javascript:formatDisk1()";
+			}
+			
+			
+	   
+	   }
+	 
+	 
+	 
+	   ////disk2
+	   
+	   /////трансфер еще не начался
+	   if(answer.move_status_disk2=="") {
+	   
+			checkIfTransferCan('disk2');
+			
+			var elem = document.getElementById("myBar_disk2");
+			elem.style.width =  "0%";
+			elem.innerHTML = "";
+			
+	   }
+	   
+	    /////трансфер уже начался
+	   if(answer.move_status_disk2=="moving") {
+	   
+			document.getElementById('start_transfer_disk2_image').src="img/stop_transfer.png";
+			document.getElementById('start_transfer_disk2_link').href="javascript:stopMoveDisk2()";
+			
+			var elem = document.getElementById("myBar_disk2");
+			elem.style.width = Math.round(answer.move_percent_disk2) + "%";
+			elem.innerHTML = Math.round(answer.move_percent_disk2) + "%";
+			
+	   }
+	   
+	   
+	    /////трансфер закончился
+	   if(answer.move_status_disk2=="done") {
+	
+			var elem = document.getElementById("myBar_disk2");
+			elem.style.width = "0%";
+			elem.innerHTML = "";
+			
+			if(document.getElementById('start_transfer_disk2_image').src!="") {
+				document.getElementById('start_transfer_disk2_image').src="img/format_card.png";
+				document.getElementById('start_transfer_disk2_link').href="javascript:formatDisk2()";
+			}
+			
+			
+	   
+	   }
+	   
+	   
+	   
+	   if((answer.move_status_disk1=="")&&(answer.move_status_disk2=="")) {
+	   
+			document.getElementById("cancel_transfer_div").style.display="block";
+	   
+	   } else  {
+	   
+			document.getElementById("cancel_transfer_div").style.display="none";
+	   
+	   }
+	   
+	   ////steps and finish button
+	   
+	   
+	 
+		if((answer.move_status_disk1=="done")||(answer.move_status_disk2=="done")) {
+	   
+			document.getElementById("finish_button").style.display="block";
+			document.getElementById("steps").src="img/steps_finish.png";
+	   
+	   } else  {
+	   
+			document.getElementById("steps").src="img/steps_start_transfer.png";
+	   
+	   }
+	  
+	})();
+
+
+}
+
+
+function getVersion() {
+
+	 (async function() {
+		await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+		
+	  var answer = callbackObj.getVersion();
+	  alert(answer);
+	  
+	})();
+
+}
+
+function getSelectedFolder() {
+
+	 (async function() {
+		await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+		
+	  var answer = callbackObj.getSelectedFolder();
+	  document.getElementById("selected_folder").innerHTML=answer;
+	  selected_folder=answer;
+	  return answer;
+	  
+	})();
+
+}
+
+
+
+function getDiscStatus() {
+
+	 (async function() {
+		await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+		
+	  var answer = callbackObj.getDiscStatus();
+	  
+	  answer=JSON.parse(answer);
+	  
+	  /////disk A
+	  if(answer.status_disk1=="inactive") {
+	  
+		document.getElementById('disk1_size').innerHTML="Card not found";
+		document.getElementById('select_device1').src="img/select_device_inactive.png";
+		disk_1_active=false;
+		disk_1_not_empty=false;
+		disk_1_real_path="";
+	  
+	  } else {
+	 	
+		
+		disk_1_active=true;
+		disk_1_real_path=answer.disk_1_real_path;
+		
+		if(answer.size_disk1>0) {
+			disk_1_not_empty=true;
+		} else {
+			disk_1_not_empty=false;
+		}
+		
+		var totalSizeGB = answer.size_disk1 / Math.pow(1024,3);
+		
+		var rounded = function(number){
+			return +number.toFixed(2);
+		}
+		
+		totalSizeGB=rounded(totalSizeGB);
+		
+		disk1_size_value=totalSizeGB+" Gb";
+		
+		document.getElementById('disk1_size').innerHTML=totalSizeGB+" Gb";
+		document.getElementById('select_device1').src="img/select_device_active.png";
+		
+	  }
+	  
+	  
+	  /////disk B
+	  if(answer.status_disk2=="inactive") {
+	  
+		
+		document.getElementById('disk2_size').innerHTML="Card not found";
+		document.getElementById('select_device2').src="img/select_device_inactive.png";
+		disk_2_active=false;
+		disk_2_not_empty=false;
+		disk_2_real_path="";
+	  
+	  } else {
+	  
+		disk_2_active=true;
+		disk_2_real_path=answer.disk_2_real_path;
+		
+		if(answer.size_disk2>0) {
+			disk_2_not_empty=true;
+		} else {
+			disk_2_not_empty=false;
+		}
+	  
+		var totalSizeGB = answer.size_disk2 / Math.pow(1024,3);
+		
+		var rounded = function(number){
+			return +number.toFixed(2);
+		}
+		
+		totalSizeGB=rounded(totalSizeGB);
+	  
+		disk2_size_value=totalSizeGB+" Gb";
+		
+		document.getElementById('disk2_size').innerHTML=totalSizeGB+" Gb";
+		document.getElementById('select_device2').src="img/select_device_active.png";
+		
+	  }
+	 
+	 
+	 
+	  
+	})();
+
+}
+
+
+function getRootPath() {
+
+	 (async function() {
+		await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+		
+	  var answer = callbackObj.getRootPath();
+	 
+	 
+		if((answer=="null")||(answer=="")) {
+			////рут директория не задана
+			
+			main_root_path="";
+			
+		} else {
+			////рут директория задана
+			
+			document.getElementById('path_value1').innerHTML=answer;
+			document.getElementById('path_value2').innerHTML=answer;
+			main_root_path=answer;
+			
+		}
+	  
+	})();
+
+}
+
+
+function setSubPatch1(selected_device_path) {
+
+	 (async function() {
+		await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+		
+	  var answer = callbackObj.getRootPath();
+	 
+	 
+		if((answer=="null")||(answer=="")) {
+			////рут директория не задана
+			
+			main_root_path="";
+			
+		} else {
+			////рут директория задана
+			
+			
+			main_root_path=answer;
+			////выбираем еще выбранную папку
+			sub_patch1=answer+"\\"+selected_folder+"\\"+selected_device_path+"\\";
+			document.getElementById('path_value1').innerHTML=sub_patch1;
+			
+		}
+	  
+	})();
+
+}
+
+
+function setSubPatch2(selected_device_path) {
+
+	 (async function() {
+		await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+		
+	  var answer = callbackObj.getRootPath();
+	 
+	 
+		if((answer=="null")||(answer=="")) {
+			////рут директория не задана
+			
+			main_root_path="";
+			
+		} else {
+			////рут директория задана
+			
+			
+			main_root_path=answer;
+			sub_patch2=answer+"\\"+selected_folder+"\\"+selected_device_path+"\\";
+			document.getElementById('path_value2').innerHTML=sub_patch2;
+		}
+	  
+	})();
+
+}
+
+
+function getListOfDevices() {
+
+	 (async function() {
+		await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+		
+	  var answer = callbackObj.getListOfDevices();
+	  
+	  document.getElementById('list_of_devices').innerHTML="";
+	  answer=JSON.parse(answer);
+	  for (var i = 0; i < answer.all_devices.length; i++) {
+		var device = answer.all_devices[i];
+		document.getElementById('list_of_devices').innerHTML=document.getElementById('list_of_devices').innerHTML+'<div id="device_1" style="float:left; margin:5px;"><table><tr><td><a href="javascript:select_device(\''+device.name+'\')"><font style="color:#071076">'+device.name+'</font></a></td><td></td></tr></table></div>';
+	}
+	
+	if(i>=9) {
+		document.getElementById('add_new_device_button').style.display="none";
+	} else {
+		document.getElementById('add_new_device_button').style.display="block";
+	}
+	  
+	})();
+
+}
+
+
+function addNewDevice() {
+
+	var a = prompt("Enter name of device", "Some device");  
+
+		if(a!=null) {
+		 (async function() {
+			await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+			
+		  var answer = callbackObj.addNewDevice(a);
+		  
+		  if(answer=="added") {
+			getListOfDevices();
+		  }
+		  
+		  if(answer=="already_exists") {
+			alert("Sorry, this device already exists!");
+		  }
+		  
+		})();
+
+	}
+}
+
+function closeListDevices() {
+
+	document.getElementById('list_devices').style.visibility="hidden";
+
+}
+
+function openListDevices(disk) {
+
+	selectedDisk=disk;
+	
+	if(disk=="disk1") {
+
+		if(disk_1_active==true) {
+		
+			document.getElementById('list_devices').style.visibility="visible";
+		
+		}
+	
+	}
+	
+	
+	if(disk=="disk2") {
+
+		if(disk_2_active==true) {
+		
+			document.getElementById('list_devices').style.visibility="visible";
+		
+		}
+	
+	}
+
+}
+
+
+function select_device(device_name) {
+
+	if(selectedDisk=="disk1") {
+	
+		document.getElementById('select_device1').style.display="none";
+		document.getElementById('device1selected').style.display="block";
+		document.getElementById('device1selected').innerHTML=device_name;
+		setSubPatch1(device_name);
+		
+	
+	}
+	
+	if(selectedDisk=="disk2") {
+	
+		document.getElementById('select_device2').style.display="none";
+		document.getElementById('device2selected').style.display="block";
+		document.getElementById('device2selected').innerHTML=device_name;
+		setSubPatch2(device_name);
+	}
+	
+	selectedDisk="";
+	closeListDevices();
+}
+
+function checkIfTransferCan(disk) {
+
+	if(disk=="disk1") {
+	
+	
+		if(sub_patch1!="") {
+		
+			document.getElementById('progress_status_disk1').src="img/transfer_status_ready_for_transfer.png";
+		
+			if(disk_1_not_empty==true) {
+			
+				document.getElementById('start_transfer_disk1_image').src="img/start_transfer_active.png";
+				document.getElementById('start_transfer_disk1_link').href="javascript:startMoveDisk1()";
+			
+			} else {
+			
+				document.getElementById('start_transfer_disk1_image').src="img/start_transfer_inactive.png";
+				document.getElementById('start_transfer_disk1_link').href="#";
+				
+			}
+		
+		} else {
+		
+			document.getElementById('progress_status_disk1').src="img/transfer_status_select_device.png";
+			document.getElementById('start_transfer_disk1_image').src="img/start_transfer_inactive.png";
+			document.getElementById('start_transfer_disk1_link').href="#";
+		
+		}
+	
+	}
+	
+	
+	
+	if(disk=="disk2") {
+	
+	
+		if(sub_patch2!="") {
+		
+			document.getElementById('progress_status_disk2').src="img/transfer_status_ready_for_transfer.png";
+		
+			if(disk_2_not_empty==true) {
+			
+				document.getElementById('start_transfer_disk2_image').src="img/start_transfer_active.png";
+				document.getElementById('start_transfer_disk2_link').href="javascript:startMoveDisk2()";
+			
+			} else {
+			
+				document.getElementById('start_transfer_disk2_image').src="img/start_transfer_inactive.png";
+				document.getElementById('start_transfer_disk2_link').href="#";
+				
+			}
+		
+		} else {
+		
+			document.getElementById('progress_status_disk2').src="img/transfer_status_select_device.png";
+			document.getElementById('start_transfer_disk2_image').src="img/start_transfer_inactive.png";
+			document.getElementById('start_transfer_disk2_link').href="#";
+		
+		}
+	
+	}
+
+}
+
+setTimeout("getSelectedFolder()",50);
+setInterval("getDiscStatus()",50);
+setTimeout("getRootPath()",50);
+setTimeout("getListOfDevices()",50);
+setInterval(function() {
+	getTransferStatus();
+},50);
+
+</script>
+<div style="width:100%">
+
+<table>
+<tr><td style="width:100%">
+<img src="img/logo.png">
+</td><td>
+
+	
+
+</td><tr></table>
+
+<br>
+<table>
+<tr><td style="width:87%">
+
+<table><tr><td>
+<img src="img/steps_start_transfer.png" id="steps">
+</td><td></td><td>
+
+<img src="img/finish.png" id="finish_button" onClick="finish()" style="display:none">
+
+</td></tr></table>
+<br><br>
+
+
+</td><td>
+
+	<a href="index.html" id="cancel_transfer_div" style="display:block"><font color="red">Cancel Transfer</a>
+
+</td><tr></table>
+
+<table><tr><td><img src="img/small_folder.png"></td><td width="5"></td><td><div id="selected_folder" style="color:#071076"></div>
+</td></tr></table>
+<br>
+
+
+<table>
+<tr>
+	<td style="color:#071076">SLOT A</td><td width="500"></td><td><div id="disk1_size" style="color:#071076"></div></td>
+</tr>
+</table>
+<br>
+<table><tr><td style="color:#071076">Path preview: </td><td><div id="path_value1" style="color:#071076">~path</div></td><td width="200"></td>
+<td>
+
+	<a href="javascript:openListDevices('disk1')"><img src="img/select_device_inactive.png" id="select_device1" style="display:block"><font id="device1selected" style="display:none;color:#071076"></font></a>
+
+</td>
+</tr></table>
+<br>
+
+<table><tr><td>
+	<img src="img/transfer_status_select_device.png" id="progress_status_disk1">
+	<br>
+	<div id="myProgress">
+	  <div id="myBar_disk1">0%</div>
+	</div>
+	
+</td><td width="10"></td><td>
+	<a href="#" id="start_transfer_disk1_link"><img src="img/start_transfer_inactive.png" id="start_transfer_disk1_image"></a>
+</td></tr></table>
+
+<br>
+<table>
+<tr>
+	<td style="color:#071076">SLOT B</td><td width="500"></td><td><div id="disk2_size"></div></td>
+</tr>
+</table>
+<br>
+<table><tr><td style="color:#071076">Path preview: </td><td><div id="path_value2" style="color:#071076">~path</div></td><td width="200"></td>
+<td>
+
+
+	<a href="javascript:openListDevices('disk2')"><img src="img/select_device_inactive.png" id="select_device2" style="display:block"><font id="device2selected" style="display:none;color:#071076"></font></a>
+
+
+</td>
+</tr></table>
+<br>
+
+<table><tr><td>
+	<img src="img/transfer_status_select_device.png" id="progress_status_disk2">
+	<br>
+	
+	<br>
+	<div id="myProgress">
+	  <div id="myBar_disk2">0%</div>
+	</div>
+	
+</td><td width="10"></td><td>
+	<a href="#" id="start_transfer_disk2_link"><img src="img/start_transfer_inactive.png" id="start_transfer_disk2_image"></a>
+</td></tr></table>
+
+</div>
+
+
+
+
+
+<div id="list_devices" style="position:fixed;top:275px;visibility:hidden;border: 2px solid #071076;border-radius: 5px;background-color:white;padding:10px">
+	<h3>Saved Devices</h3>
+<table><tr><td>
+
+<div id="list_of_devices" style="width:800px;float:none">
+	
+</div>
+
+
+
+</td><td></td><td valign="top">
+
+	<a href="javascript:closeListDevices()"><img src="img/close_small.png"></a>
+
+</td></tr><tr><td>
+<br>
+<br>
+<a href="javascript:addNewDevice()" style="display:block;float:none" id="add_new_device_button">
+	<img src="img/add_new_device.png">
+</a>
+</td><td></td><td>
+
+
+</td></tr></table>
+</div>
+
+
+
+</body>
+</html>

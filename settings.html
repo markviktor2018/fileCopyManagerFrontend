@@ -1,0 +1,212 @@
+<html>
+<head>
+<title>Тестовая программа</title>
+</head>
+<body>
+
+<script>
+
+function getVersion() {
+
+	 (async function() {
+		await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+		
+	  var answer = callbackObj.getVersion();
+	  alert(answer);
+	  
+	})();
+
+}
+
+function selectRootPath() {
+
+	 (async function() {
+		await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+		
+	  var answer = callbackObj.selectRootPath();
+	  document.getElementById('root_directory').value=answer;
+	  
+	})();
+
+}
+
+
+function getRootPath() {
+
+	 (async function() {
+		await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+		
+	  var answer = callbackObj.getRootPath();
+	  document.getElementById('root_directory').value=answer;
+	  
+	})();
+
+}
+
+
+function getListOfDevices() {
+
+	 (async function() {
+		await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+		
+	  var answer = callbackObj.getListOfDevices();
+	  
+	  document.getElementById('list_of_devices').innerHTML="";
+	  answer=JSON.parse(answer);
+	  for (var i = 0; i < answer.all_devices.length; i++) {
+		var device = answer.all_devices[i];
+		document.getElementById('list_of_devices').innerHTML=document.getElementById('list_of_devices').innerHTML+'<div id="device_1" style="float:left; margin:5px;"><table><tr><td>'+device.name+'</td><td><a href="javascript:deleteDevice(\''+device.name+'\')"><img src="img/close_small.png"></a></tr></table></div>';
+	}
+	
+	if(i>=9) {
+		document.getElementById('add_new_device_button').style.display="none";
+	} else {
+		document.getElementById('add_new_device_button').style.display="block";
+	}
+	  
+	})();
+
+}
+
+function deleteDevice(name) {
+
+	if(confirm('Are you sure to delete device '+name+'?')) {
+		 (async function() {
+			await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+			
+		  var answer = callbackObj.deleteDevice(name);
+		  
+		  if(answer=="deleted") {
+			alert("Device successfully deleted!");
+			getListOfDevices();
+		  } else {
+			alert("Some error was...");
+		  }
+		  
+		})();
+	}
+
+}
+
+
+function addNewDevice() {
+
+	var a = prompt("Enter name of device", "Some device");  
+
+		if(a!=null) {
+		 (async function() {
+			await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+			
+		  var answer = callbackObj.addNewDevice(a);
+		  
+		  if(answer=="added") {
+			getListOfDevices();
+		  }
+		  
+		  if(answer=="already_exists") {
+			alert("Sorry, this device already exists!");
+		  }
+		  
+		})();
+
+	}
+}
+
+function getHistory() {
+
+
+		 (async function() {
+			await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+			
+		  var answer = callbackObj.getHistory();
+		
+		  answer=JSON.parse(answer);
+		  
+		 
+		  
+		  var history_table="<table><tr><td style='color:#071076;width:150px'><center><b>Transfer id</td><td style='color:#071076;width:150px'><center><b>Date</td><td style='color:#071076;width:150px'><center><b>Time</td><td style='color:#071076;width:150px'><center><b>Job</td><td style='color:#071076;width:150px'><center><b>Device</td><td style='color:#071076;width:150px'><center><b>Size</td><td style='color:#071076;width:150px'><center><b>Transfer Status</td></tr>";
+		for (var i = 0; i < answer.all_history.length; i++) {
+		var history_record = answer.all_history[i];
+		
+			history_table=history_table+"<tr><td style='color:#071076;'><center>"+history_record.id+"</td><td style='color:#071076;'><center>"+history_record.date+"</td><td style='color:#071076;'><center>"+history_record.time+"</td><td style='color:#071076;'><center>"+history_record.job+"</td><td style='color:#071076;'><center>"+history_record.device+"</td><td style='color:#071076;'><center>"+history_record.size+"</td><td style='color:#071076;'><center>"+history_record.transfer_status+"</td></tr>";
+		
+		}
+		  history_table=history_table+"</table>";
+		  document.getElementById('history_table').innerHTML=history_table;
+		
+		})();
+
+	
+}
+
+
+setTimeout("getRootPath()",100);
+setTimeout("getListOfDevices()",100);
+setTimeout("getHistory()",100);
+
+</script>
+<div style="width:100%">
+
+<table>
+<tr><td style="width:100%">
+<img src="img/logo.png">
+</td><td>
+
+	<a href="index.html"><img src="img/close_button.png"></a>
+
+</td><tr></table>
+
+
+<h2>Settings</h2>
+<h3>Root Directory</h3>
+<table><tr><td>
+<input type="text" id="root_directory" style="width:500px;height:40px">
+</td><td width="5px"></td><td>
+	<a href="javascript:selectRootPath()"><img src="img/browse_path.png"></a>
+</td></tr></table>
+<br>
+
+<h3>Saved Devices</h3>
+<table><tr><td>
+
+<div id="list_of_devices" style="width:800px;float:none">
+	<!--<div id="device_1" style="float:left; margin:5px;">
+		<table>
+			<tr>
+				<td>Device 1</td>
+				<td><img src="img/close_small.png">
+			</tr>
+		</table>
+	</div>
+	
+	<div id="device_1" style="float:left; margin:5px;">
+		<table>
+			<tr>
+				<td>Device 1</td>
+				<td><img src="img/close_small.png">
+			</tr>
+		</table>
+	</div>
+	-->
+</div>
+
+</td></tr><tr><td>
+<br>
+<br>
+<a href="javascript:addNewDevice()" style="display:block;float:none" id="add_new_device_button">
+	<img src="img/add_new_device.png">
+</a>
+</td></tr></table>
+
+<br>
+<h3>Transfer Log</h3>
+<div id="history_table">
+
+</div>
+<Br><br>
+</div>
+
+
+
+</body>
+</html>

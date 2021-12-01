@@ -1,0 +1,360 @@
+<html>
+<head>
+<title>Тестовая программа</title>
+</head>
+<body>
+
+<script>
+
+var selected_folder="";
+var disk_1_active=false;
+var disk_2_active=false;
+
+var disk_1_empty=false;
+var disk_2_empty=false;
+var main_root_path="";
+
+
+function getVersion() {
+
+	 (async function() {
+		await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+		
+	  var answer = callbackObj.getVersion();
+	  alert(answer);
+	  
+	})();
+
+}
+
+function setSelectedFolder(selected_folder) {
+
+	 (async function() {
+		await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+		
+	  var answer = callbackObj.setSelectedFolder(selected_folder);
+	  ////alert(answer);
+	  
+	})();
+
+}
+
+
+function createDirectory() {
+
+	if(main_root_path!="") {
+		var directory = prompt("Enter name of directory", "test"); 
+		
+			if(directory!=null) {
+			 (async function() {
+				await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+				
+			  var answer = callbackObj.createDirectory(directory);
+			  if(answer=="created") {
+			  
+				alert("New directory successfully created!");
+				getRootPath();
+			  
+			  } else {
+			  
+				alert("Some error was occured!");
+				
+			  }
+			  
+			})();
+		}
+	}
+
+}
+
+function getDiscStatus() {
+
+	 (async function() {
+		await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+		
+	  var answer = callbackObj.getDiscStatus();
+	  
+	  answer=JSON.parse(answer);
+	  
+	  /////disk A
+	  if(answer.status_disk1=="inactive") {
+	  
+		document.getElementById('disk1_image').src="img/inactive_sd_card.png";
+		document.getElementById('disk1_size').innerHTML="Null";
+		disk_1_active=false;
+	  
+	  } else {
+	 	
+		document.getElementById('disk1_image').src="img/active_sd_card.png";
+		disk_1_active=true;
+		
+		var totalSizeGB = answer.size_disk1 / Math.pow(1024,3);
+		
+			if(answer.size_disk1>0) {
+			
+				disk_1_empty=false;
+			
+			} else {
+			
+				disk_1_empty=true;
+			
+			}
+		
+		var rounded = function(number){
+			return +number.toFixed(2);
+		}
+		
+		totalSizeGB=rounded(totalSizeGB);
+		
+		document.getElementById('disk1_size').innerHTML=totalSizeGB+" Gb";
+		
+	  }
+	  
+	  
+	  /////disk B
+	  if(answer.status_disk2=="inactive") {
+	  
+		document.getElementById('disk2_image').src="img/inactive_sd_card.png";
+		document.getElementById('disk2_size').innerHTML="Null";
+		disk_2_active=false;
+	  
+	  } else {
+	  
+		disk_2_active=true;
+		
+			if(answer.size_disk2>0) {
+			
+				disk_2_empty=false;
+			
+			} else {
+			
+				disk_2_empty=true;
+			
+			}
+
+		
+	  
+		var totalSizeGB = answer.size_disk2 / Math.pow(1024,3);
+		
+		var rounded = function(number){
+			return +number.toFixed(2);
+		}
+		
+		totalSizeGB=rounded(totalSizeGB);
+	  
+		document.getElementById('disk2_image').src="img/active_sd_card.png";
+		document.getElementById('disk2_size').innerHTML=totalSizeGB+" Gb";
+		
+	  }
+	 
+	 
+	 
+	  
+	})();
+
+}
+
+
+
+function getRootPath() {
+
+	 (async function() {
+		await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+		
+	  var answer = callbackObj.getRootPath();
+	 
+	 
+		if((answer=="null")||(answer=="")) {
+			////рут директория не задана
+			document.getElementById('warning_label').style.display="block";
+			main_root_path="";
+			document.getElementById("create_directory_image").src="img/create_new_folder_inactive.png";
+		} else {
+			////рут директория задана
+			document.getElementById('warning_label').style.display="none";
+			document.getElementById('path_value').innerHTML=answer;
+			///alert("You can get List of fils!");
+			getDirectoriesOfRootPath(answer);
+			main_root_path=answer;
+			///можно разрешать создавать директорию
+			document.getElementById("create_directory_image").src="img/create_new_folder_active.png";
+		}
+	  
+	})();
+
+}
+
+var total_count_directories=0;
+
+
+function getDirectoriesOfRootPath(root_path) {
+
+	 (async function() {
+		await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+		
+	  var answer = callbackObj.getDirectoriesOfRootPath(root_path);
+
+	 
+	   document.getElementById('directory_files').innerHTML="";
+	  /// alert(answer);
+	  
+	  answer=JSON.parse(answer);
+	  total_count_directories=0;
+	  
+	  for (var i = 0; i < answer.all_directories.length; i++) {
+		var directory = answer.all_directories[i];
+		var totalsize=directory.size;
+		var totalSizeGB = totalsize / Math.pow(1024,3);
+		
+		var rounded = function(number){
+			return +number.toFixed(2);
+		}
+		
+		totalSizeGB=rounded(totalSizeGB);
+		
+		total_count_directories=total_count_directories+1;
+		
+		///totalSizeGB = Math.round(totalSizeGB,2);
+		
+		document.getElementById('directory_files').innerHTML=document.getElementById('directory_files').innerHTML+'<div id="directory_'+i+'" onClick="selectDirectory(\'directory_'+i+'\')" style="border: 0px solid #071076;border-radius: 0px;"><table><tr><td><img src="img/folder.png"></td><td></td><td id="selected_directory_'+i+'" style="color:#071076">'+directory.name+'</td><td width="10"></td><td style="color:#071076">'+totalSizeGB+' GB</td></tr></table></div>';
+	}
+	  
+	})();
+
+}
+
+
+function selectDirectory(directory_id) {
+
+	////cнимаем стиль со всех папок
+	 for (var i = 0; i < total_count_directories; i++) {
+	 
+		document.getElementById('directory_'+i).style.borderColor="#071076;";
+		document.getElementById('directory_'+i).style.borderWidth="0px";
+		document.getElementById('directory_'+i).style.borderRadius="0px";
+		
+		
+	 
+	 }
+
+	document.getElementById(directory_id).style.borderColor="#071076;";
+	document.getElementById(directory_id).style.borderWidth="2px";
+	document.getElementById(directory_id).style.borderRadius="5px";
+	
+	selected_folder=document.getElementById("selected_"+directory_id).innerHTML;
+	setSelectedFolder(selected_folder);
+	
+}
+
+
+
+function openSettings() {
+
+	window.href.location="settings.html";
+
+}
+
+
+function checkStartTransferStatus() {
+
+	can_transfer=false;
+	if(selected_folder!=="") {
+	
+		if((disk_1_active==true)||(disk_2_active==true)) {
+		
+			if((disk_1_empty==false)||(disk_2_empty==false))
+				can_transfer=true;
+		
+		}
+	
+	}
+
+	if(can_transfer==false) {
+	
+		document.getElementById("new_transfer_link").href="#";
+		document.getElementById("new_transfer_image").src="img/start_new_transfer_inactive.png";
+	
+	} else {
+	
+		document.getElementById("new_transfer_link").href="start_new_trasnfer.html";
+		document.getElementById("new_transfer_image").src="img/start_new_transfer_active.png";
+		
+	}
+
+}
+
+
+setTimeout("getRootPath()",50);
+setInterval("getDiscStatus()",50);
+setInterval("checkStartTransferStatus()",50);
+
+</script>
+
+<div style="width:100%">
+
+<table>
+<tr><td style="width:100%">
+<img src="img/logo.png">
+</td><td>
+
+	<a href="settings.html"><img src="img/menu.png"></a>
+
+</td><tr></table>
+
+
+<br>
+<div id="warning_label" style="width:400px;display:none"><font color="red">Setup required: </font> Set root directory in settings</div>
+<br>
+<img src="img/select_job.png"><br><br>
+
+<div id="directory_path" style="width:800px;display:block">
+	<table><tr><td style="color:#071076">Directory preview: </td><td><div id="path_value" style="color:#071076">~path</div></td></tr></table>
+	<br>
+	
+	
+</div>
+<br>
+
+<table>
+<tr><td style="width:650px">
+
+<div id="directory_files" style="width:650px;display:block;overflow-x: hidden;overflow-y: scroll;height: 150px;">
+	
+	
+	</div>
+
+</td><td width="5px"></td><td>
+
+	<table>
+	
+		<tr>
+			<td><img src="img/active_sd_card.png" id="disk1_image"></td>
+			<td width="5"></td>
+			<td style="color:#071076">
+				CARD A<br>
+				<div id="disk1_size" style="color:#071076">0.0 Gb</div>
+			</td>
+		</tr>
+		
+		<tr>
+			<td><img src="img/inactive_sd_card.png" id="disk2_image"></td>
+			<td width="5"></td>
+			<td style="color:#071076">
+				CARD B<br>
+				<div id="disk2_size" style="color:#071076">0.0 Gb</div>
+			</td>
+		</tr>
+	</table>
+
+
+</td></tr>
+</table>
+<Br>
+<a href=""><img src="img/create_new_folder_inactive.png" id="create_directory_image" onClick="createDirectory()"></a>
+<br>
+<br>
+<a href="start_new_trasnfer.html" id="new_transfer_link"><img src="img/start_new_transfer_inactive.png"  id="new_transfer_image"></a>
+
+</div>
+</body>
+</html>
