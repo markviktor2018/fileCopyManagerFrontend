@@ -173,7 +173,7 @@ function getRootPath() {
 		} else {
 			////рут директория задана
 			document.getElementById('warning_label').style.display="none";
-			document.getElementById('path_value').innerHTML=answer;
+			///document.getElementById('path_value').innerHTML=answer;
 			///alert("You can get List of fils!");
 			getDirectoriesOfRootPath(answer);
 			main_root_path=answer;
@@ -309,7 +309,7 @@ setInterval("checkStartTransferStatus()",50);
 <img src="img/select_job.png"><br><br>
 
 <div id="directory_path" style="width:800px;display:block">
-	<table><tr><td style="color:#071076">Directory preview: </td><td><div id="path_value" style="color:#071076">~path</div></td></tr></table>
+	
 	<br>
 	
 	

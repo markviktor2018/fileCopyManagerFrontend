@@ -4,6 +4,9 @@
 </head>
 <body>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+
 <style>
 
 #myBar_disk1 {
@@ -54,6 +57,94 @@ selected_folder="";
 
 var i = 0;
 
+			var mouseDown_format_disk1 = 0;
+			var pressed_format_disk1=0;
+			
+			
+
+			$("#start_transfer_disk1_link").on('touchstart mousedown', function(e) { 
+                                ++mouseDown_format_disk1;
+                        });
+
+			$("#start_transfer_disk1_link").on('touchend mousedown', function(e) {
+                                --mouseDown_format_disk1;
+								
+                        });
+						
+				setTimeout(function() {		
+						document.getElementById("start_transfer_disk1_image").addEventListener("mousedown", function() {
+						
+								 ++mouseDown_format_disk1;
+						});
+						
+						document.getElementById("start_transfer_disk1_image").addEventListener("mouseup", function() {
+						
+								 --mouseDown_format_disk1;
+						});
+					},1000);
+	
+						
+					setInterval(function format_disk1_pressed_timer() {
+						
+							if(mouseDown_format_disk1>0) {
+							
+								
+								pressed_format_disk1=pressed_format_disk1+1;
+							
+							} else {
+								
+								pressed_format_disk1=0;
+							
+							}
+						
+						}
+						
+						,1000);
+			var mouseDown_format_disk2 = 0;
+			var pressed_format_disk2=0;
+			
+			
+
+			$("#start_transfer_disk2_link").on('touchstart mousedown', function(e) { 
+                                ++mouseDown_format_disk2;
+                        });
+
+			$("#start_transfer_disk2_link").on('touchend mousedown', function(e) {
+                                --mouseDown_format_disk2;
+								
+                        });
+						
+				setTimeout(function() {		
+						document.getElementById("start_transfer_disk2_image").addEventListener("mousedown", function() {
+						
+								 ++mouseDown_format_disk2;
+						});
+						
+						document.getElementById("start_transfer_disk2_image").addEventListener("mouseup", function() {
+						
+								 --mouseDown_format_disk2;
+						});
+					},1000);
+	
+						
+					setInterval(function format_disk2_pressed_timer() {
+						
+							if(mouseDown_format_disk2>0) {
+							
+								
+								pressed_format_disk2=pressed_format_disk2+1;
+							
+							} else {
+								
+								pressed_format_disk2=0;
+							
+							}
+						
+						}
+						
+						,1000);
+
+
 function move() {
   if (i == 0) {
     i = 1;
@@ -79,9 +170,7 @@ function addNewTansferLog(job,device,size,status) {
 	
 			 (async function() {
 				await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
-			
 			   var answer = callbackObj.addNewTansferLog(job,device,size,status);
-			 
 			})();
 
 }
@@ -92,19 +181,18 @@ function finish() {
 			 (async function() {
 				await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
 			
-			  var answer = callbackObj.setFinish();
-			  
-			   var answer_move = callbackObj.getMoveStatus();
+				  var answer_move = callbackObj.getMoveStatus();
 			   
-			  
 				answer_move=JSON.parse(answer_move);
-
+			
 			  
 			  if(answer_move.move_status_disk1=="done")
 			   addNewTansferLog(selected_folder,document.getElementById('device1selected').innerHTML,disk1_size_value,'Finished');
 			   
 				if(answer_move.move_status_disk2=="done")
 			   addNewTansferLog(selected_folder,document.getElementById('device2selected').innerHTML,disk2_size_value,'Finished');
+			   
+			     var answer = callbackObj.setFinish();
 			  
 			  window.location.href="index.html";
 			  
@@ -115,20 +203,27 @@ function finish() {
 
 function formatDisk1() {
 
-		
+
+if(pressed_format_disk1>3) {
+	
 			 (async function() {
 				await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
 			
 			  var answer = callbackObj.formatDisk1();
 			  
 			  addNewTansferLog(selected_folder,document.getElementById('device1selected').innerHTML,disk1_size_value,'Formatted');
-			  
+			 
 			})();
+	}
 
 }
 
 function formatDisk2() {
 
+
+		if(pressed_format_disk2>3) {
+		
+			
 		
 			 (async function() {
 				await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
@@ -139,6 +234,8 @@ function formatDisk2() {
 			    addNewTansferLog(selected_folder,document.getElementById('device2selected').innerHTML,disk1_size_value,'Formatted');
 			  
 			})();
+			
+			}
 
 }
 
@@ -494,8 +591,8 @@ function getRootPath() {
 		} else {
 			////рут директория задана
 			
-			document.getElementById('path_value1').innerHTML=answer;
-			document.getElementById('path_value2').innerHTML=answer;
+			//document.getElementById('path_value1').innerHTML=answer;
+			///document.getElementById('path_value2').innerHTML=answer;
 			main_root_path=answer;
 			
 		}
@@ -525,7 +622,7 @@ function setSubPatch1(selected_device_path) {
 			main_root_path=answer;
 			////выбираем еще выбранную папку
 			sub_patch1=answer+"\\"+selected_folder+"\\"+selected_device_path+"\\";
-			document.getElementById('path_value1').innerHTML=sub_patch1;
+			///document.getElementById('path_value1').innerHTML=sub_patch1;
 			
 		}
 	  
@@ -553,7 +650,7 @@ function setSubPatch2(selected_device_path) {
 			
 			main_root_path=answer;
 			sub_patch2=answer+"\\"+selected_folder+"\\"+selected_device_path+"\\";
-			document.getElementById('path_value2').innerHTML=sub_patch2;
+			///document.getElementById('path_value2').innerHTML=sub_patch2;
 		}
 	  
 	})();
@@ -782,7 +879,7 @@ setInterval(function() {
 </tr>
 </table>
 <br>
-<table><tr><td style="color:#071076">Path preview: </td><td><div id="path_value1" style="color:#071076">~path</div></td><td width="200"></td>
+<table><tr><td style="color:#071076"></td><td></td><td width="500"></td>
 <td>
 
 	<a href="javascript:openListDevices('disk1')"><img src="img/select_device_inactive.png" id="select_device1" style="display:block"><font id="device1selected" style="display:none;color:#071076"></font></a>
@@ -799,7 +896,7 @@ setInterval(function() {
 	</div>
 	
 </td><td width="10"></td><td>
-	<a href="#" id="start_transfer_disk1_link"><img src="img/start_transfer_inactive.png" id="start_transfer_disk1_image"></a>
+	<a href="#" id="start_transfer_disk1_link"><img src="img/start_transfer_inactive.png" id="start_transfer_disk1_image" name="start_transfer_disk1_image"></a>
 </td></tr></table>
 
 <br>
@@ -809,7 +906,7 @@ setInterval(function() {
 </tr>
 </table>
 <br>
-<table><tr><td style="color:#071076">Path preview: </td><td><div id="path_value2" style="color:#071076">~path</div></td><td width="200"></td>
+<table><tr><td style="color:#071076"> </td><td></td><td width="500"></td>
 <td>
 
 
@@ -830,7 +927,7 @@ setInterval(function() {
 	</div>
 	
 </td><td width="10"></td><td>
-	<a href="#" id="start_transfer_disk2_link"><img src="img/start_transfer_inactive.png" id="start_transfer_disk2_image"></a>
+	<a href="#" id="start_transfer_disk2_link"><img src="img/start_transfer_inactive.png" id="start_transfer_disk2_image" name="start_transfer_disk2_image"></a>
 </td></tr></table>
 
 </div>
