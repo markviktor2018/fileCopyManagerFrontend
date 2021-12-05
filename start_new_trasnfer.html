@@ -204,7 +204,7 @@ function finish() {
 function formatDisk1() {
 
 
-if(pressed_format_disk1>3) {
+	if(confirm("Вы уверены, что хотите отформатировать этот диск?")) {
 	
 			 (async function() {
 				await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
@@ -214,28 +214,26 @@ if(pressed_format_disk1>3) {
 			  addNewTansferLog(selected_folder,document.getElementById('device1selected').innerHTML,disk1_size_value,'Formatted');
 			 
 			})();
-	}
-
+	
+		}
 }
 
 function formatDisk2() {
 
 
-		if(pressed_format_disk2>3) {
+			if(confirm("Вы уверены, что хотите отформатировать этот диск?")) {
 		
-			
-		
-			 (async function() {
-				await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
-			
-			  var answer = callbackObj.formatDisk2();
-			  
-			  
-			    addNewTansferLog(selected_folder,document.getElementById('device2selected').innerHTML,disk1_size_value,'Formatted');
-			  
-			})();
-			
+				(async function() {
+					await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+				
+				var answer = callbackObj.formatDisk2();
+				
+				
+					addNewTansferLog(selected_folder,document.getElementById('device2selected').innerHTML,disk1_size_value,'Formatted');
+				
+				})();
 			}
+		
 
 }
 
