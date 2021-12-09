@@ -4,6 +4,20 @@
 </head>
 <body>
 
+	<style>
+
+	* {
+      font-family: Montserrat;
+	 
+    }
+
+	body {
+		padding: 10px;
+		background-color: #f5f5f5;
+	}
+
+	</style>
+
 <script>
 	 
 
@@ -80,13 +94,13 @@ function getDiscStatus() {
 	  /////disk A
 	  if(answer.status_disk1=="inactive") {
 	  
-		document.getElementById('disk1_image').src="img/inactive_sd_card.png";
+		document.getElementById('disk1_image').src="img/sd-grey.png";
 		document.getElementById('disk1_size').innerHTML="Null";
 		disk_1_active=false;
 	  
 	  } else {
 	 	
-		document.getElementById('disk1_image').src="img/active_sd_card.png";
+		document.getElementById('disk1_image').src="img/sd-blue.png";
 		disk_1_active=true;
 		
 		var totalSizeGB = answer.size_disk1 / Math.pow(1024,3);
@@ -115,7 +129,7 @@ function getDiscStatus() {
 	  /////disk B
 	  if(answer.status_disk2=="inactive") {
 	  
-		document.getElementById('disk2_image').src="img/inactive_sd_card.png";
+		document.getElementById('disk2_image').src="img/sd_grey.png";
 		document.getElementById('disk2_size').innerHTML="Null";
 		disk_2_active=false;
 	  
@@ -143,7 +157,7 @@ function getDiscStatus() {
 		
 		totalSizeGB=rounded(totalSizeGB);
 	  
-		document.getElementById('disk2_image').src="img/active_sd_card.png";
+		document.getElementById('disk2_image').src="img/sd-blue.png";
 		document.getElementById('disk2_size').innerHTML=totalSizeGB+" Gb";
 		
 	  }
@@ -168,11 +182,15 @@ function getRootPath() {
 		if((answer=="null")||(answer=="")) {
 			////рут директория не задана
 			document.getElementById('warning_label').style.display="block";
+			document.getElementById('step_select_job').style.display="none";
 			main_root_path="";
 			document.getElementById("create_directory_image").src="img/create_new_folder_inactive.png";
+
+			
 		} else {
 			////рут директория задана
 			document.getElementById('warning_label').style.display="none";
+			document.getElementById('step_select_job').style.display="none";
 			///document.getElementById('path_value').innerHTML=answer;
 			///alert("You can get List of fils!");
 			getDirectoriesOfRootPath(answer);
@@ -217,7 +235,7 @@ function getDirectoriesOfRootPath(root_path) {
 		
 		///totalSizeGB = Math.round(totalSizeGB,2);
 		
-		document.getElementById('directory_files').innerHTML=document.getElementById('directory_files').innerHTML+'<div id="directory_'+i+'" onClick="selectDirectory(\'directory_'+i+'\')" style="border: 0px solid #071076;border-radius: 0px;"><table><tr><td><img src="img/folder.png"></td><td></td><td id="selected_directory_'+i+'" style="color:#071076">'+directory.name+'</td><td width="10"></td><td style="color:#071076">'+totalSizeGB+' GB</td></tr></table></div>';
+		document.getElementById('directory_files').innerHTML=document.getElementById('directory_files').innerHTML+'<div id="directory_'+i+'" onClick="selectDirectory(\'directory_'+i+'\')" style="border: 0px solid #071076;border-radius: 0px;"><table><tr><td><img src="img/folder.png" width="55"></td><td width="5"></td><td id="selected_directory_'+i+'" style="color:#071076;font-size:16px"><font size="4"><b>'+directory.name+'</td><td width="430"></td><td style="color:#071076;size:12px"><font size="4"><b>'+totalSizeGB+' GB</td></tr></table></div>';
 	}
 	  
 	})();
@@ -239,7 +257,7 @@ function selectDirectory(directory_id) {
 	 }
 
 	document.getElementById(directory_id).style.borderColor="#071076;";
-	document.getElementById(directory_id).style.borderWidth="2px";
+	document.getElementById(directory_id).style.borderWidth="3px";
 	document.getElementById(directory_id).style.borderRadius="5px";
 	
 	selected_folder=document.getElementById("selected_"+directory_id).innerHTML;
@@ -295,18 +313,18 @@ setInterval("checkStartTransferStatus()",50);
 
 <table>
 <tr><td style="width:100%">
-<img src="img/logo.png">
+<img src="img/logo.png" width="100">
 </td><td>
 
-	<a href="settings.html"><img src="img/menu.png"></a>
+	<a href="settings.html"><img src="img/menu-open.png" width="40" style="margin:20px"></a>
 
 </td><tr></table>
 
 
 <br>
-<div id="warning_label" style="width:400px;display:none"><font color="red">Setup required: </font> Set root directory in settings</div>
+<div id="warning_label" style="width:400px;display:none;margin-left:25px;margin-top:25px"><font style="color:#e90000"><b></b>Setup required: </font><font style="color:#071076"> Set root directory in settings</font></div>
 <br>
-<img src="img/select_job.png"><br><br>
+<img src="img/select_job.png" id="step_select_job" style="display:block"><br><br>
 
 <div id="directory_path" style="width:800px;display:block">
 	
@@ -329,20 +347,27 @@ setInterval("checkStartTransferStatus()",50);
 	<table>
 	
 		<tr>
-			<td><img src="img/active_sd_card.png" id="disk1_image"></td>
+			<td><img src="img/sd-blue.png" id="disk1_image" width="60"></td>
 			<td width="5"></td>
-			<td style="color:#071076">
+			<td style="color:#071076" valign="top"><font size="4"><b>
 				CARD A<br>
-				<div id="disk1_size" style="color:#071076">0.0 Gb</div>
+				<div id="disk1_size" style="color:#071076;size:16pt;font-style:bold">0.0 Gb</div>
 			</td>
+		</tr>
+
+
+		<tr>
+			<td></td>
+			<td width="5"></td>
+			<td style="color:#071076" valign="top"><br><br></td>
 		</tr>
 		
 		<tr>
-			<td><img src="img/inactive_sd_card.png" id="disk2_image"></td>
+			<td><img src="img/sd-grey.png" id="disk2_image"  width="60"></td>
 			<td width="5"></td>
-			<td style="color:#071076">
+			<td style="color:#071076" valign="top"><font size="4"><b>
 				CARD B<br>
-				<div id="disk2_size" style="color:#071076">0.0 Gb</div>
+				<div id="disk2_size" style="color:#071076;size:16pt;font-style:bold">0.0 Gb</div>
 			</td>
 		</tr>
 	</table>
@@ -351,10 +376,19 @@ setInterval("checkStartTransferStatus()",50);
 </td></tr>
 </table>
 <Br>
-<a href=""><img src="img/create_new_folder_inactive.png" id="create_directory_image" onClick="createDirectory()"></a>
+
+<table>
+	<tr><td>
+		<img src="img/folder-new.png" width="65">
+	</td><td>
+		<a href=""><img src="img/create_new_folder_inactive.png" style="margin-left:-10px" id="create_directory_image" onClick="createDirectory()"></a>
+	</td></tr>
+</table>
+
+
 <br>
 <br>
-<a href="start_new_trasnfer.html" id="new_transfer_link"><img src="img/start_new_transfer_inactive.png"  id="new_transfer_image"></a>
+<a href="start_new_trasnfer.html" id="new_transfer_link"><img src="img/start_new_transfer_inactive.png" width="250"  id="new_transfer_image"></a>
 
 </div>
 </body>
