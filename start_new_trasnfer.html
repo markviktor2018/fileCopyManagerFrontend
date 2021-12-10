@@ -9,24 +9,43 @@
 
 <style>
 
+@font-face {
+  font-family: 'Montserrat';
+  src: url('Montserrat-Regular.ttf');
+}
+
+* {
+  font-family: Montserrat;
+ 
+}
+
+body {
+	padding: 10px;
+	background-color: #f5f5f5;
+}
+
 #myBar_disk1 {
   width: 0%;
-  height: 30px;
+  height: 35px;
   background-color: #071076;
-  border-radius: 5px;
+  size: 14pt;
+  font-family: Montserrat;
+  border-radius: 30px;
   text-align: center; /* To center it horizontally (if you want) */
-  line-height: 30px; /* To center it vertically */
+  line-height: 35px; /* To center it vertically */
   color: white;
 }
 
 
 #myBar_disk2 {
-  width: 0%;
-  height: 30px;
+	width: 0%;
+  height: 35px;
   background-color: #071076;
-  border-radius: 5px;
+  size: 14pt;
+  font-family: Montserrat;
+  border-radius: 30px;
   text-align: center; /* To center it horizontally (if you want) */
-  line-height: 30px; /* To center it vertically */
+  line-height: 35px; /* To center it vertically */
   color: white;
 }
 
@@ -148,9 +167,9 @@ var i = 0;
 function move() {
   if (i == 0) {
     i = 1;
-    var elem = document.getElementById("myBar_disk1");
+    var elem = document.getElementById("myBar_disk2");
     var width = 10;
-    var id = setInterval(frame, 10);
+    var id = setInterval(frame, 20);
     function frame() {
       if (width >= 100) {
         clearInterval(id);
@@ -203,39 +222,57 @@ function finish() {
 
 function formatDisk1() {
 
-
-	if(confirm("Are you sure to format this drive?")) {
+	document.getElementById('ask_for_format_background').style.visibility='visible';
+	document.getElementById('ask_for_format_content').style.visibility='visible';
+	document.getElementById('ask_content').innerHTML="SLOT A: FORMAT CARD?";
+	document.getElementById('button_yes_link').href="javascript:realFormatDisk1()";
 	
-			 (async function() {
-				await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
-			
-			  var answer = callbackObj.formatDisk1();
-			  
-			  addNewTansferLog(selected_folder,document.getElementById('device1selected').innerHTML,disk1_size_value,'Formatted');
-			 
-			})();
-	
-		}
 }
+
 
 function formatDisk2() {
 
+	document.getElementById('ask_for_format_background').style.visibility='visible';
+	document.getElementById('ask_for_format_content').style.visibility='visible';
+	document.getElementById('ask_content').innerHTML="SLOT B: FORMAT CARD?";
+	document.getElementById('button_yes_link').href="javascript:realFormatDisk2()";
 
-			if(confirm("Are you sure to format this drive?")) {
-		
-				(async function() {
+
+}
+
+
+function realFormatDisk1() {
+	(async function() {
+				await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
+			  var answer = callbackObj.formatDisk1();
+			  addNewTansferLog(selected_folder,document.getElementById('device1selected').innerHTML,disk1_size_value,'Formatted');
+			  closeFormatAsk();
+			})();
+}
+
+function realFormatDisk2() {
+	(async function() {
 					await CefSharp.BindObjectAsync("callbackObj", "callbackObj");
 				
 				var answer = callbackObj.formatDisk2();
 				
-				
+				closeFormatAsk();
 					addNewTansferLog(selected_folder,document.getElementById('device2selected').innerHTML,disk1_size_value,'Formatted');
 				
 				})();
-			}
-		
-
 }
+
+
+
+
+function closeFormatAsk() {
+	document.getElementById('ask_for_format_background').style.visibility='hidden';
+	document.getElementById('ask_for_format_content').style.visibility='hidden';
+}
+
+
+
+
 
 function startMoveDisk1() {
 
@@ -344,7 +381,8 @@ function getTransferStatus() {
 			elem.style.width =  "0%";
 			elem.innerHTML = "";
 			
-			
+			document.getElementById('progress_status_disk1').style.display="block";
+			document.getElementById('myProgress_disk1').style.display="none";
 			
 			
 	   }
@@ -358,6 +396,9 @@ function getTransferStatus() {
 			var elem = document.getElementById("myBar_disk1");
 			elem.style.width = Math.round(answer.move_percent_disk1) + "%";
 			elem.innerHTML = Math.round(answer.move_percent_disk1) + "%";
+
+			document.getElementById('progress_status_disk1').style.display="none";
+			document.getElementById('myProgress_disk1').style.display="block";
 			
 	   }
 	   
@@ -368,10 +409,14 @@ function getTransferStatus() {
 			var elem = document.getElementById("myBar_disk1");
 			elem.style.width = "0%";
 			elem.innerHTML = "";
+
+			document.getElementById('progress_status_disk1').style.display="block";
+			document.getElementById('myProgress_disk1').style.display="none";
 			
 			if(document.getElementById('start_transfer_disk1_image').src!="") {
 				document.getElementById('start_transfer_disk1_image').src="img/format_card.png";
 				document.getElementById('start_transfer_disk1_link').href="javascript:formatDisk1()";
+				document.getElementById('progress_status_disk1').src="img/transfer_status_completed.png";
 			}
 			
 	   }
@@ -388,6 +433,9 @@ function getTransferStatus() {
 			var elem = document.getElementById("myBar_disk2");
 			elem.style.width =  "0%";
 			elem.innerHTML = "";
+
+			document.getElementById('progress_status_disk2').style.display="block";
+			document.getElementById('myProgress_disk2').style.display="none";
 			
 	   }
 	   
@@ -401,6 +449,8 @@ function getTransferStatus() {
 			elem.style.width = Math.round(answer.move_percent_disk2) + "%";
 			elem.innerHTML = Math.round(answer.move_percent_disk2) + "%";
 			
+			document.getElementById('progress_status_disk2').style.display="none";
+			document.getElementById('myProgress_disk2').style.display="block";
 	   }
 	   
 	   
@@ -414,9 +464,11 @@ function getTransferStatus() {
 			if(document.getElementById('start_transfer_disk2_image').src!="") {
 				document.getElementById('start_transfer_disk2_image').src="img/format_card.png";
 				document.getElementById('start_transfer_disk2_link').href="javascript:formatDisk2()";
+				document.getElementById('progress_status_disk2').src="img/transfer_status_completed.png";
 			}
 			
-			
+			document.getElementById('progress_status_disk2').style.display="block";
+			document.getElementById('myProgress_disk2').style.display="none";
 	   
 	   }
 	   
@@ -665,7 +717,7 @@ function getListOfDevices() {
 	  answer=JSON.parse(answer);
 	  for (var i = 0; i < answer.all_devices.length; i++) {
 		var device = answer.all_devices[i];
-		document.getElementById('list_of_devices').innerHTML=document.getElementById('list_of_devices').innerHTML+'<div id="device_1" style="float:left; margin:5px;"><table><tr><td><a href="javascript:select_device(\''+device.name+'\')"><font style="color:#071076">'+device.name+'</font></a></td><td></td></tr></table></div>';
+		document.getElementById('list_of_devices').innerHTML=document.getElementById('list_of_devices').innerHTML+'<div id="device_1" style="float:left; margin:5px;"><table><tr><td><a style="text-decoration:none;" href="javascript:select_device(\''+device.name+'\')"><font style="color:#071076;" size="4"><b>'+device.name+'</font></a></td><td></td></tr></table></div>';
 	}
 	
 	if(i>=9) {
@@ -705,6 +757,7 @@ function addNewDevice() {
 function closeListDevices() {
 
 	document.getElementById('list_devices').style.visibility="hidden";
+	document.getElementById('list_devices_content').style.visibility="hidden";
 
 }
 
@@ -717,6 +770,7 @@ function openListDevices(disk) {
 		if(disk_1_active==true) {
 		
 			document.getElementById('list_devices').style.visibility="visible";
+			document.getElementById('list_devices_content').style.visibility="visible";
 		
 		}
 	
@@ -728,6 +782,7 @@ function openListDevices(disk) {
 		if(disk_2_active==true) {
 		
 			document.getElementById('list_devices').style.visibility="visible";
+			document.getElementById('list_devices_content').style.visibility="visible";
 		
 		}
 	
@@ -832,6 +887,9 @@ setInterval(function() {
 	getTransferStatus();
 },50);
 
+
+//setTimeout("move()",1000);
+
 </script>
 <div style="width:100%">
 
@@ -846,7 +904,7 @@ setInterval(function() {
 
 <br>
 <table>
-<tr><td style="width:87%">
+<tr><td style="width:86%">
 
 <table><tr><td>
 <img src="img/steps_start_transfer.png" id="steps">
@@ -860,53 +918,51 @@ setInterval(function() {
 
 </td><td>
 
-	<a href="index.html" id="cancel_transfer_div" style="display:block"><font color="red">Cancel Transfer</a>
+	<a href="index.html" id="cancel_transfer_div" style="display:block;text-decoration:none;color:#e90000;font-weight: bold;font-size:12pt">Cancel Transfer</a>
 
 </td><tr></table>
 
-<table><tr><td><img src="img/small_folder.png"></td><td width="5"></td><td><div id="selected_folder" style="color:#071076"></div>
+<table><tr><td><img src="img/small_folder.png"></td><td width="5"></td><td><div id="selected_folder" style="color:#071076;font-size:14pt;font-weight:bold"></div>
 </td></tr></table>
 <br>
 
 
 <table>
 <tr>
-	<td style="color:#071076">SLOT A</td><td width="500"></td><td><div id="disk1_size" style="color:#071076"></div></td>
+	<td style="color:#071076"><b>SLOT A</td><td width="500"></td><td><div id="disk1_size" style="color:#071076;font-weight: bold;font-size:12pt;color:#071076"></div></td>
 </tr>
 </table>
-<br>
-<table><tr><td style="color:#071076"></td><td></td><td width="500"></td>
+
+<table><tr><td style="color:#071076"></td><td></td><td width="545"></td>
 <td>
 
-	<a href="javascript:openListDevices('disk1')"><img src="img/select_device_inactive.png" id="select_device1" style="display:block"><font id="device1selected" style="display:none;color:#071076"></font></a>
+	<a href="javascript:openListDevices('disk1')" style="text-decoration:none"><img src="img/select_device_inactive.png" id="select_device1" style="display:block"><font id="device1selected" style="display:none;color:#071076;font-weight: bold;font-size:14pt;padding:7px"></font></a>
 
 </td>
 </tr></table>
 <br>
-
 <table><tr><td>
-	<img src="img/transfer_status_select_device.png" id="progress_status_disk1">
-	<br>
-	<div id="myProgress">
+	<img src="img/transfer_status_select_device.png" width="538" id="progress_status_disk1" style="margin-top:-18px;display:block;">
+
+	<div id="myProgress_disk1" style="display:none;margin-top:-20px;margin-left:5px;border: 5px solid #071076 ;width:522px;height:35px;border-color:#071076; border-radius: 30px;">
 	  <div id="myBar_disk1">0%</div>
 	</div>
 	
 </td><td width="10"></td><td>
-	<a href="#" id="start_transfer_disk1_link"><img src="img/start_transfer_inactive.png" width="300" id="start_transfer_disk1_image" name="start_transfer_disk1_image"></a>
+	<a href="#" id="start_transfer_disk1_link"><img src="img/start_transfer_inactive.png" style="display:block;margin-top:-20px" width="230" id="start_transfer_disk1_image" name="start_transfer_disk1_image"></a>
 </td></tr></table>
 
 <br>
 <table>
 <tr>
-	<td style="color:#071076">SLOT B</td><td width="500"></td><td><div id="disk2_size"></div></td>
+	<td style="color:#071076"><b>SLOT B</td><td width="500"></td><td><div id="disk2_size" style="font-weight: bold;font-size:12pt;color:#071076"></div></td>
 </tr>
 </table>
-<br>
-<table><tr><td style="color:#071076"> </td><td></td><td width="500"></td>
+<table><tr><td style="color:#071076"> </td><td></td><td width="545"></td>
 <td>
 
 
-	<a href="javascript:openListDevices('disk2')"><img src="img/select_device_inactive.png" id="select_device2" style="display:block"><font id="device2selected" style="display:none;color:#071076"></font></a>
+	<a href="javascript:openListDevices('disk2')" style="text-decoration:none"><img src="img/select_device_inactive.png" id="select_device2" style="display:block;margin-top:-0px"><font id="device2selected" style="display:none;color:#071076;font-weight: bold;font-size:14pt;padding:7px"></font></a>
 
 
 </td>
@@ -914,49 +970,72 @@ setInterval(function() {
 <br>
 
 <table><tr><td>
-	<img src="img/transfer_status_select_device.png" id="progress_status_disk2">
-	<br>
-	
-	<br>
-	<div id="myProgress">
+
+
+	<img src="img/transfer_status_select_device.png" width="538" id="progress_status_disk2" style="margin-top:-18px;display:block;">
+
+	<div id="myProgress_disk2" style="display:none;margin-top:-20px;margin-left:5px;border: 5px solid #071076 ;width:522px;height:35px;border-color:#071076; border-radius: 30px;">
 	  <div id="myBar_disk2">0%</div>
 	</div>
 	
+
 </td><td width="10"></td><td>
-	<a href="#" id="start_transfer_disk2_link"><img src="img/start_transfer_inactive.png"  width="300" id="start_transfer_disk2_image" name="start_transfer_disk2_image"></a>
+	<a href="#" id="start_transfer_disk2_link"><img src="img/start_transfer_inactive.png" style="margin-top:-20px" width="230" id="start_transfer_disk2_image" name="start_transfer_disk2_image"></a>
 </td></tr></table>
 
 </div>
 
 
 
-
-
-<div id="list_devices" style="position:fixed;top:275px;visibility:hidden;border: 2px solid #071076;border-radius: 5px;background-color:white;padding:10px">
-	<h3>Saved Devices</h3>
-<table><tr><td>
-
-<div id="list_of_devices" style="width:800px;float:none">
-	
+<div id="list_devices" style="position:absolute;left:-5px;background-color:grey;top:0px;width:100%;height:100%;visibility:hidden;z-index:2;opacity:0.8">
 </div>
 
+	<div id="list_devices_content" style="visibility:hidden;position:fixed;left:0px;top:475px;width:940px;z-index:3;background-color:white; opacity:1;border: 2px solid #cfcfcf;border-radius: 5px;background-color:white;padding:10px">
+		<br>
+	<table><tr><td>
+
+	<div id="list_of_devices" style="width:880px;float:none;background-color:white; opacity:1;">
+		
+	</div>
 
 
-</td><td></td><td valign="top">
 
-	<a href="javascript:closeListDevices()"><img src="img/close_small.png"></a>
+	</td><td></td><td valign="top">
 
-</td></tr><tr><td>
-<br>
-<br>
-<a href="javascript:addNewDevice()" style="display:block;float:none" id="add_new_device_button">
-	<img src="img/add_new_device.png">
-</a>
-</td><td></td><td>
+		<a href="javascript:closeListDevices()"><img src="img/close menu red.png" width="20"></a>
+
+	</td></tr><tr><td>
+	<br>
+	<br>
+	<a href="javascript:addNewDevice()" style="display:block;float:none;margin-top:-5px" id="add_new_device_button">
+		<img src="img/add_new_device.png">
+	</a>
+	</td><td></td><td>
 
 
-</td></tr></table>
-</div>
+	</td></tr></table><br><br>
+	</div>
+
+	<!---Format dialog----->
+	<div id="ask_for_format_background" style="position:absolute;left:-5px;background-color:grey;top:0px;width:100%;height:100%;visibility:hidden;z-index:2;opacity:0.8">
+	</div>
+
+		<div id="ask_for_format_content" style="visibility:hidden;position:fixed;left:300px;top:250px;width:300px;z-index:3;background-color:white; opacity:1;border: 2px solid #cfcfcf;border-radius: 20px;background-color:white;padding:50px">
+			<center>
+			<table>
+				<tr><td><div id="ask_content" style="font-size: 16pt;size: 16pt;color:#071076;font-weight: bold;font-family: Montserrat;"></div></td></tr>
+			</table>
+			<br>
+			<table>
+				<tr>
+					<td><a href="javascript:answer_yes()" id="button_yes_link"><img src="img/button_yes.png" width="150"></a></td>
+					<td width="5"></td>
+					<td><a href="javascript:closeFormatAsk()"><img src="img/button_cancel.png" width="150"></a></td>
+			</tr>
+			</table>
+			</center>
+
+		</div>
 
 
 

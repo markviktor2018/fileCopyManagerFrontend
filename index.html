@@ -6,6 +6,12 @@
 
 	<style>
 
+@font-face {
+  font-family: 'Montserrat';
+  src: url('Montserrat-Regular.ttf');
+}
+
+
 	* {
       font-family: Montserrat;
 	 
@@ -58,7 +64,25 @@ function setSelectedFolder(selected_folder) {
 function createDirectory() {
 
 	if(main_root_path!="") {
-		var directory = prompt("Enter name of directory", "test"); 
+
+
+		document.getElementById('ask_for_folder_background').style.visibility="visible";
+		document.getElementById('ask_for_folder_content').style.visibility="visible";
+		document.getElementById('folder_name').value='';
+
+		
+	}
+
+}
+
+function createDirectory_no() {
+	document.getElementById('ask_for_folder_background').style.visibility="hidden";
+		document.getElementById('ask_for_folder_content').style.visibility="hidden";
+}
+
+
+function createDirectory_yes() {
+	var directory =document.getElementById('folder_name').value;
 		
 			if(directory!=null) {
 			 (async function() {
@@ -67,19 +91,18 @@ function createDirectory() {
 			  var answer = callbackObj.createDirectory(directory);
 			  if(answer=="created") {
 			  
-				alert("New directory successfully created!");
+				///alert("New directory successfully created!");
 				getRootPath();
 			  
 			  } else {
 			  
-				alert("Some error was occured!");
+				///alert("Some error was occured!");
 				
 			  }
+			  createDirectory_no();
 			  
 			})();
 		}
-	}
-
 }
 
 function getDiscStatus() {
@@ -190,7 +213,7 @@ function getRootPath() {
 		} else {
 			////рут директория задана
 			document.getElementById('warning_label').style.display="none";
-			document.getElementById('step_select_job').style.display="none";
+			document.getElementById('step_select_job').style.display="block";
 			///document.getElementById('path_value').innerHTML=answer;
 			///alert("You can get List of fils!");
 			getDirectoriesOfRootPath(answer);
@@ -235,7 +258,7 @@ function getDirectoriesOfRootPath(root_path) {
 		
 		///totalSizeGB = Math.round(totalSizeGB,2);
 		
-		document.getElementById('directory_files').innerHTML=document.getElementById('directory_files').innerHTML+'<div id="directory_'+i+'" onClick="selectDirectory(\'directory_'+i+'\')" style="border: 0px solid #071076;border-radius: 0px;"><table><tr><td><img src="img/folder.png" width="55"></td><td width="5"></td><td id="selected_directory_'+i+'" style="color:#071076;font-size:16px"><font size="4"><b>'+directory.name+'</td><td width="430"></td><td style="color:#071076;size:12px"><font size="4"><b>'+totalSizeGB+' GB</td></tr></table></div>';
+		document.getElementById('directory_files').innerHTML=document.getElementById('directory_files').innerHTML+'<div id="directory_'+i+'" onClick="selectDirectory(\'directory_'+i+'\')" style="border: 0px solid #071076;border-radius: 0px;"><table><tr><td><img src="img/folder.png" width="55"></td><td width="5"></td><td id="selected_directory_'+i+'" style="color:#071076;font-size:16px;font-weight:bold">'+directory.name+'</td><td width="430"></td><td style="color:#071076;size:12px"><font size="3"><b>'+totalSizeGB+' GB</td></tr></table></div>';
 	}
 	  
 	})();
@@ -326,7 +349,7 @@ setInterval("checkStartTransferStatus()",50);
 <br>
 <img src="img/select_job.png" id="step_select_job" style="display:block"><br><br>
 
-<div id="directory_path" style="width:800px;display:block">
+<div id="directory_path" style="width:800px;display:block;font-size:16pt">
 	
 	<br>
 	
@@ -349,7 +372,7 @@ setInterval("checkStartTransferStatus()",50);
 		<tr>
 			<td><img src="img/sd-blue.png" id="disk1_image" width="60"></td>
 			<td width="5"></td>
-			<td style="color:#071076" valign="top"><font size="4"><b>
+			<td style="color:#071076" valign="top"><font size="3"><b>
 				CARD A<br>
 				<div id="disk1_size" style="color:#071076;size:16pt;font-style:bold">0.0 Gb</div>
 			</td>
@@ -365,7 +388,7 @@ setInterval("checkStartTransferStatus()",50);
 		<tr>
 			<td><img src="img/sd-grey.png" id="disk2_image"  width="60"></td>
 			<td width="5"></td>
-			<td style="color:#071076" valign="top"><font size="4"><b>
+			<td style="color:#071076" valign="top"><font size="3"><b>
 				CARD B<br>
 				<div id="disk2_size" style="color:#071076;size:16pt;font-style:bold">0.0 Gb</div>
 			</td>
@@ -381,7 +404,7 @@ setInterval("checkStartTransferStatus()",50);
 	<tr><td>
 		<img src="img/folder-new.png" width="65">
 	</td><td>
-		<a href=""><img src="img/create_new_folder_inactive.png" style="margin-left:-10px" id="create_directory_image" onClick="createDirectory()"></a>
+		<a href="javascript:createDirectory()"><img src="img/create_new_folder_inactive.png" style="margin-left:-10px" id="create_directory_image" onClick="createDirectory()"></a>
 	</td></tr>
 </table>
 
@@ -390,6 +413,35 @@ setInterval("checkStartTransferStatus()",50);
 <br>
 <a href="start_new_trasnfer.html" id="new_transfer_link"><img src="img/start_new_transfer_inactive.png" width="250"  id="new_transfer_image"></a>
 
+
+<!---Name folder dialog----->
+<div id="ask_for_folder_background" style="position:absolute;left:-5px;background-color:grey;top:0px;width:100%;height:100%;visibility:hidden;z-index:2;opacity:0.8">
 </div>
+
+	<div id="ask_for_folder_content" style="visibility:hidden;position:fixed;left:300px;top:250px;width:300px;z-index:3;background-color:white; opacity:1;border: 2px solid #cfcfcf;border-radius: 20px;background-color:white;padding:50px">
+		<center>
+		<table>
+			<tr><td><div id="ask_content" style="font-size: 16pt;size: 16pt;color:#071076;font-weight: bold;font-family: Montserrat;">Name of folder:</div></td></tr>
+		</table>
+		<br>
+		<input type="text" id="folder_name" style="font-size:12pt;color:#071076;width:300px;height:40px;border-radius:5px;border: 3px solid #071076 ;">
+		<br><br>
+		<table>
+			<tr>
+				<td><a href="javascript:createDirectory_yes()" id="button_yes_link"><img src="img/button_yes.png" width="150"></a></td>
+				<td width="5"></td>
+				<td><a href="javascript:createDirectory_no()"><img src="img/button_cancel.png" width="150"></a></td>
+		</tr>
+		</table>
+		</center>
+
+	</div>
+
+
+
+</div>
+
+
+
 </body>
 </html>
